@@ -2,11 +2,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine.UI;
+
 public class SceneController : MonoBehaviour
 {
     [Header("Pengaturan Transisi")]
     public Image fadeImage;
     public float fadeDuration = 1f;
+
+    [Header("Pengaturan Pause")]
+    public GameObject pausePanel;
 
     private void Start()
     {
@@ -15,6 +19,31 @@ public class SceneController : MonoBehaviour
             StartCoroutine(FadeSequence(1f, 0f)); 
         }
     }
+
+    // ==========================================
+    // FUNGSI TAMBAHAN: PAUSE & RESUME
+    // ==========================================
+    public void PauseGame()
+    {
+        Time.timeScale = 0f;
+        if (pausePanel != null)
+        {
+            pausePanel.SetActive(true);
+        }
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1f;
+        if (pausePanel != null)
+        {
+            pausePanel.SetActive(false);
+        }
+    }
+
+    // ==========================================
+    // FUNGSI ASLI MILIKMU (TIDAK ADA PERUBAHAN)
+    // ==========================================
     public void LoadScene(string sceneName)
     {
         StartCoroutine(FadeOutAndLoad(sceneName));
@@ -53,6 +82,7 @@ public class SceneController : MonoBehaviour
             fadeImage.gameObject.SetActive(false);
         }
     }
+
     public void RestartCurrentScene()
     {
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
