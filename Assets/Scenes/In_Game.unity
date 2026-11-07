@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 530261391}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -158,7 +158,9 @@ MonoBehaviour:
   currentRunSpeed: 0
   jumpForce: 8
   gravity: 25
+  fallMultiplier: 1.8
   slideDuration: 0.8
+  fastFallSlideForce: 20
   slideHeight: 0.9
   stumbleSlowMultiplier: 0.5
   stumbleDuration: 1
@@ -189,7 +191,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!136 &530261393
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -285,6 +287,93 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &719435454
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 719435457}
+  - component: {fileID: 719435456}
+  - component: {fileID: 719435455}
+  - component: {fileID: 719435458}
+  m_Layer: 0
+  m_Name: GameController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &719435455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 719435454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22bdd0c9160abce44b98d4a772e2fb2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EffectManager
+  luckyDurations: 030000000500000007000000
+--- !u!114 &719435456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 719435454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d4fd4354006d36478164daac71e1bab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  minDistance: 300
+  maxDistance: 600
+  timeBufferMultiplier: 1.6
+  currentState: 0
+  toiletSpawnThreshold: 15
+  isToiletSpawned: 0
+--- !u!4 &719435457
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 719435454}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.66965, y: -0.5, z: 24.22301}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &719435458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 719435454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff9d9a4173a25294dab6386c75a17cdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIManager
+  usePrototypeUI: 1
+  distanceText: {fileID: 0}
+  timerText: {fileID: 0}
+  timerSlider: {fileID: 0}
+  gachaCardPanel: {fileID: 0}
+  gachaEffectText: {fileID: 0}
+  gachaDurationText: {fileID: 0}
+  winPanel: {fileID: 0}
+  gameOverPanel: {fileID: 0}
+  gameOverReasonText: {fileID: 0}
 --- !u!1 &1224218469
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,6 +386,7 @@ GameObject:
   - component: {fileID: 1224218472}
   - component: {fileID: 1224218471}
   - component: {fileID: 1224218470}
+  - component: {fileID: 1224218474}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -415,13 +505,33 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1224218469}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.103353724, y: -0, z: -0, w: 0.9946447}
+  m_LocalPosition: {x: 0, y: 6, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 11.865, y: 0, z: 0}
+--- !u!114 &1224218474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1224218469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6af05d0fe69dcff45987462887b5ff42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralCamera
+  target: {fileID: 530261396}
+  offset: {x: 0, y: 3.5, z: -5.5}
+  smoothSpeedX: 10
+  smoothSpeedY: 4
+  baseFOV: 60
+  maxSpeedFOV: 74
+  fovLerpSpeed: 5
+  maxPullbackZ: -1.2
 --- !u!1 &1480198126
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,7 +692,7 @@ MonoBehaviour:
   - {fileID: 1920324019606761394, guid: 74ef32ecb0a0478428f2ba49992bcdee, type: 3}
   - {fileID: 7202994705995870507, guid: 846e7a56a2fec7749a3f18d192486aaf, type: 3}
   - {fileID: 5506825612325136203, guid: 4997404feee6f4845966b8a4f563eca9, type: 3}
-  sideOffset: 6
+  sideOffset: 11
   spawnZDistance: 60
   pieceLength: 10
   initialPieces: 8
@@ -714,6 +824,58 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2036706909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2036706911}
+  - component: {fileID: 2036706910}
+  m_Layer: 0
+  m_Name: ObstacleSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2036706910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036706909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99a4d61c333a48149a8efb48fb081c2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
+  lowObstaclePrefab: {fileID: 450238126247845124, guid: d30abb6bb27c288478e9b4cf8a7ecc8f, type: 3}
+  highObstaclePrefab: {fileID: 6723010441831018253, guid: cc55e0b01923584408863265c3a5595e, type: 3}
+  fullObstaclePrefab: {fileID: 8448498366723296087, guid: 2e63c1ccd3267a84192d3f4a0a954f87, type: 3}
+  gachaPickupPrefab: {fileID: 7016446982460234142, guid: 15470d10616807f4b87c48eef03581cb, type: 3}
+  toiletPrefab: {fileID: 8129282490014184634, guid: 6aaaf668fe1ae5b45a8f64da065658a2, type: 3}
+  spawnDistanceZ: 55
+  spawnInterval: 1.7
+  laneDistance: 2.5
+--- !u!4 &2036706911
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036706909}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.20864, y: 0.13416, z: -0.2695}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -723,3 +885,5 @@ SceneRoots:
   - {fileID: 530261396}
   - {fileID: 1922315944}
   - {fileID: 1597768335}
+  - {fileID: 719435457}
+  - {fileID: 2036706911}

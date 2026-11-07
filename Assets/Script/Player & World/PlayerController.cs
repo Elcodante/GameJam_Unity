@@ -8,31 +8,33 @@ public class PlayerController : MonoBehaviour
     public static PlayerController Instance { get; private set; }
 
     [Header("Lane Settings")]
-    [Tooltip("Jarak antar jalur")]
     public float laneDistance = 2.5f; 
-    public float laneChangeSpeed = 15f;
-    private int currentLane = 1; // 0: Kiri, 1: Tengah, 2: Kanan
+    public float laneChangeSpeed = 18f; // Ditingkatkan agar lebih gesit
+    private int currentLane = 1;
 
     [Header("Movement Speeds")]
     public float baseRunSpeed = 12f;
     [HideInInspector] public float currentRunSpeed;
     private float speedMultiplier = 1f;
 
-    [Header("Jump & Gravity")]
-    public float jumpForce = 8f;
-    public float gravity = 25f;
+    [Header("Snappy Jump & Gravity")]
+    public float jumpForce = 9.5f;
+    public float gravity = 28f;
+    [Tooltip("Gravitasi tambahan saat jatuh agar lompatan terasa berbobot seperti Subway Surfers")]
+    public float fallMultiplier = 1.8f;
     private float verticalVelocity;
 
     [Header("Slide Settings")]
-    public float slideDuration = 0.8f;
+    public float slideDuration = 0.65f; // Durasi lebih padat
+    public float fastFallSlideForce = 20f; // Membanting ke tanah seketika saat slide di udara
     private bool isSliding = false;
     private Vector3 originalCenter;
     private float originalHeight;
-    public float slideHeight = 0.9f;
+    public float slideHeight = 0.85f;
 
-    [Header("Stumble / Side Hit Penalty")]
+    [Header("Stumble Penalty")]
     public float stumbleSlowMultiplier = 0.5f;
-    public float stumbleDuration = 1.0f;
+    public float stumbleDuration = 0.8f;
     private bool isStumbling = false;
 
     [Header("Controls Flags")]
@@ -66,7 +68,6 @@ public class PlayerController : MonoBehaviour
         var keyboard = Keyboard.current;
         if (keyboard == null) return;
 
-        // Deteksi input geser jalur
         bool leftInput = keyboard.aKey.wasPressedThisFrame || keyboard.leftArrowKey.wasPressedThisFrame;
         bool rightInput = keyboard.dKey.wasPressedThisFrame || keyboard.rightArrowKey.wasPressedThisFrame;
 
@@ -85,13 +86,24 @@ public class PlayerController : MonoBehaviour
         if (jumpInput && controller.isGrounded)
         {
             verticalVelocity = jumpForce;
+            AudioManager.Instance?.PlayJump();
         }
 
         // Slide
         bool slideInput = keyboard.sKey.wasPressedThisFrame || keyboard.downArrowKey.wasPressedThisFrame;
-        if (slideInput && !isSliding)
+        if (slideInput)
         {
-            StartCoroutine(SlideRoutine());
+            // Jika ditekan di udara: Fast-Fall
+            if (!controller.isGrounded)
+            {
+                verticalVelocity = -fastFallSlideForce;
+            }
+
+            if (!isSliding)
+            {
+                AudioManager.Instance?.PlaySlide(); // <-- DIPINDAH KE SINI
+                StartCoroutine(SlideRoutine());
+            }
         }
     }
 
@@ -100,7 +112,6 @@ public class PlayerController : MonoBehaviour
         int targetLane = Mathf.Clamp(currentLane + direction, 0, 2);
         if (targetLane == currentLane) return;
 
-        // Cek Raycast samping untuk mendeteksi tabrakan obstacle
         float checkDistance = laneDistance;
         Vector3 rayDir = direction > 0 ? transform.right : -transform.right;
         Vector3 rayOrigin = transform.position + Vector3.up * 0.5f;
@@ -119,26 +130,26 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyMovementAndGravity()
     {
-        // 1. Hitung Kecepatan Lari (Treadmill speed)
         float targetSpeed = baseRunSpeed * speedMultiplier;
         if (isStumbling) targetSpeed *= stumbleSlowMultiplier;
         currentRunSpeed = Mathf.Lerp(currentRunSpeed, targetSpeed, 10f * Time.deltaTime);
 
-        // 2. Hitung Perpindahan Horizontal (X) via controller.Move
+        // Perpindahan jalur horizontal X yang halus
         float targetX = (currentLane - 1) * laneDistance;
         float deltaX = (targetX - transform.position.x) * laneChangeSpeed;
 
-        // 3. Hitung Gravitasi & Lompat (Y)
+        // Snappy Gravity Curve (Jatuh lebih cepat dari naik)
         if (controller.isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = -1f;
         }
         else
         {
-            verticalVelocity -= gravity * Time.deltaTime;
+            float appliedGravity = gravity;
+            if (verticalVelocity < 0) appliedGravity *= fallMultiplier; // Fast-falling
+            verticalVelocity -= appliedGravity * Time.deltaTime;
         }
 
-        // 4. Eksekusi semua pergerakan sekaligus ke CharacterController
         Vector3 finalMovement = new Vector3(deltaX, verticalVelocity, 0);
         controller.Move(finalMovement * Time.deltaTime);
     }
@@ -148,8 +159,6 @@ public class PlayerController : MonoBehaviour
         isSliding = true;
         controller.height = slideHeight;
         controller.center = new Vector3(originalCenter.x, slideHeight / 2f, originalCenter.z);
-
-        if (!controller.isGrounded) verticalVelocity = -jumpForce;
 
         yield return new WaitForSeconds(slideDuration);
 
@@ -162,11 +171,13 @@ public class PlayerController : MonoBehaviour
     {
         if (isStumbling || isInvincible) return;
         StartCoroutine(StumbleRoutine());
+        AudioManager.Instance?.PlayStumble();
     }
 
     private IEnumerator StumbleRoutine()
     {
         isStumbling = true;
+        ProceduralCamera.Instance?.TriggerShake(0.35f, 0.25f); // Getar kamera saat tersandung
         yield return new WaitForSeconds(stumbleDuration);
         isStumbling = false;
     }
