@@ -243,6 +243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneController
   fadeImage: {fileID: 1602049767}
   fadeDuration: 1
+  pausePanel: {fileID: 0}
 --- !u!1 &239285603
 GameObject:
   m_ObjectHideFlags: 0
@@ -927,17 +928,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   laneDistance: 2.5
-  laneChangeSpeed: 15
+  laneChangeSmoothTime: 0.07
   baseRunSpeed: 12
   currentRunSpeed: 0
+  speedResponse: 6
+  stopResponse: 7
   jumpForce: 8
   gravity: 25
   fallMultiplier: 1.8
+  jumpBufferTime: 0.15
   slideDuration: 0.8
   fastFallSlideForce: 20
   slideHeight: 0.9
   stumbleSlowMultiplier: 0.5
   stumbleDuration: 1
+  visualRoot: {fileID: 0}
+  useProceduralVisuals: 1
+  leanRollAngle: 14
+  leanYawAngle: 10
+  slideTiltAngle: 30
+  visualResponse: 14
+  squashStrength: 0.45
   invertControls: 0
   isInvincible: 0
   canControl: 1
@@ -2949,6 +2960,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneController
   fadeImage: {fileID: 1602049767}
   fadeDuration: 1
+  pausePanel: {fileID: 0}
 --- !u!4 &1031997577
 Transform:
   m_ObjectHideFlags: 0
@@ -2976,8 +2988,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff9d9a4173a25294dab6386c75a17cdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
+  usePrototypeUI: 1
   distanceText: {fileID: 665246039}
   timerText: {fileID: 689074775}
+  timerSlider: {fileID: 0}
   gachaCardPanel: {fileID: 961165047}
   gachaEffectText: {fileID: 1020245705}
   gachaDurationText: {fileID: 1998529719}
@@ -3347,13 +3361,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralCamera
   target: {fileID: 530261396}
-  offset: {x: 0, y: 3.5, z: -5.5}
-  smoothSpeedX: 10
-  smoothSpeedY: 4
+  offset: {x: 0, y: 3.5, z: -6}
+  lateralFollow: 0.65
+  verticalFollow: 0.4
+  groundLevelY: 0
+  smoothTimeX: 0.14
+  smoothTimeY: 0.22
+  smoothTimeZ: 0.35
+  lookAhead: 7
+  lookAheadBoost: 3
+  lookHeight: 1.5
+  lookLateralFollow: 0.8
+  lookVerticalFollow: 0.6
   baseFOV: 60
   maxSpeedFOV: 74
   fovLerpSpeed: 5
   maxPullbackZ: -1.2
+  boostRatioForMax: 1.4
+  slowRatioForMax: 0.65
+  slowFOVReduction: 4
+  slideCameraDip: -0.35
+  landingKickStrength: 0.025
+  maxLandingKick: 0.5
+  maxBankRoll: 3
+  bankVelocityReference: 5
+  bankResponse: 8
+  shakeRollDegrees: 8
+  shakeFrequency: 25
+  shakeFadeOut: 0.35
+  gameOverShakeDuration: 0.45
+  gameOverShakeIntensity: 0.5
 --- !u!1 &1269064072
 GameObject:
   m_ObjectHideFlags: 0
@@ -5626,11 +5663,55 @@ MonoBehaviour:
   fullObstaclePrefab: {fileID: 8448498366723296087, guid: 2e63c1ccd3267a84192d3f4a0a954f87, type: 3}
   gachaPickupPrefab: {fileID: 7016446982460234142, guid: 15470d10616807f4b87c48eef03581cb, type: 3}
   toiletPrefab: {fileID: 8129282490014184634, guid: 6aaaf668fe1ae5b45a8f64da065658a2, type: 3}
-  spawnInterval: 1.7
   spawnDistanceZ: 55
   laneDistance: 2.5
+  syncLaneDistanceWithPlayer: 1
+  lowY: 0.4
+  highY: 1.7
+  fullY: 0.9
+  gachaGroundY: 0.8
+  gachaAirY: 1.8
+  gachaUnderY: 0.4
+  rowSpacing: 6
+  introGapRows: 0
+  startGapRows: 3
+  endGapRows: 1
+  maxLaneShiftPerRow: 1
+  randomMirror: 1
+  avoidRepeatLast: 2
+  difficultyCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  finalClearZone: 20
   gachaSpawnChance: 0.28
   gachaCooldown: 4
+  patterns:
+  - name: 
+    minDifficulty: 0
+    maxDifficulty: 0
+    weight: 0
+    rows: 
 --- !u!4 &2036706911
 Transform:
   m_ObjectHideFlags: 0
