@@ -9,9 +9,6 @@ public class SceneController : MonoBehaviour
     public Image fadeImage;
     public float fadeDuration = 1f;
 
-    [Header("Pengaturan Pause")]
-    public GameObject pausePanel;
-
     private void Start()
     {
         if (fadeImage != null)
@@ -19,33 +16,9 @@ public class SceneController : MonoBehaviour
             StartCoroutine(FadeSequence(1f, 0f)); 
         }
     }
-
-    // ==========================================
-    // FUNGSI TAMBAHAN: PAUSE & RESUME
-    // ==========================================
-    public void PauseGame()
-    {
-        Time.timeScale = 0f;
-        if (pausePanel != null)
-        {
-            pausePanel.SetActive(true);
-        }
-    }
-
-    public void ResumeGame()
-    {
-        Time.timeScale = 1f;
-        if (pausePanel != null)
-        {
-            pausePanel.SetActive(false);
-        }
-    }
-
-    // ==========================================
-    // FUNGSI ASLI MILIKMU (TIDAK ADA PERUBAHAN)
-    // ==========================================
     public void LoadScene(string sceneName)
     {
+        Time.timeScale = 1f;
         StartCoroutine(FadeOutAndLoad(sceneName));
     }
 
@@ -65,7 +38,7 @@ public class SceneController : MonoBehaviour
 
         while (timer < fadeDuration)
         {
-            timer += Time.deltaTime;
+            timer += Time.unscaledDeltaTime;
             fadeColor.a = Mathf.Lerp(startAlpha, targetAlpha, timer / fadeDuration);
             fadeImage.color = fadeColor;
             yield return null; // Tunggu frame berikutnya
@@ -85,6 +58,7 @@ public class SceneController : MonoBehaviour
 
     public void RestartCurrentScene()
     {
+        Time.timeScale = 1f;
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene(currentSceneIndex);
     }
