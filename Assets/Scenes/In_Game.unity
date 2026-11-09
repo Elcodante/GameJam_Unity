@@ -243,7 +243,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneController
   fadeImage: {fileID: 1602049767}
   fadeDuration: 1
-  pausePanel: {fileID: 0}
 --- !u!1 &239285603
 GameObject:
   m_ObjectHideFlags: 0
@@ -471,6 +470,7 @@ GameObject:
   m_Component:
   - component: {fileID: 330408406}
   - component: {fileID: 330408407}
+  - component: {fileID: 330408408}
   m_Layer: 5
   m_Name: Slider_Music
   m_TagString: Untagged
@@ -547,10 +547,23 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 0.5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &330408408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330408405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 375831232e3503245bca2d149123904f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioSettingsUI
+  channel: 1
 --- !u!1 &343719170
 GameObject:
   m_ObjectHideFlags: 0
@@ -599,6 +612,7 @@ GameObject:
   - component: {fileID: 361110742}
   - component: {fileID: 361110741}
   - component: {fileID: 361110740}
+  - component: {fileID: 361110744}
   m_Layer: 5
   m_Name: Button_Pause
   m_TagString: Untagged
@@ -744,6 +758,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 1, y: 1}
+--- !u!114 &361110744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361110739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec0dbe0cc71897d40a4e9a300ea860c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
 --- !u!1 &442486599
 GameObject:
   m_ObjectHideFlags: 0
@@ -928,11 +954,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   laneDistance: 2.5
-  laneChangeSmoothTime: 0.07
+  laneChangeSharpness: 16
+  laneChangeMinSpeed: 6
   baseRunSpeed: 12
   currentRunSpeed: 0
   speedResponse: 6
   stopResponse: 7
+  startSpeedFraction: 0.3
+  launchResponse: 2.5
   jumpForce: 8
   gravity: 25
   fallMultiplier: 1.8
@@ -942,6 +971,7 @@ MonoBehaviour:
   slideHeight: 0.9
   stumbleSlowMultiplier: 0.5
   stumbleDuration: 1
+  secondStumbleIsFatal: 0
   visualRoot: {fileID: 0}
   useProceduralVisuals: 1
   leanRollAngle: 14
@@ -1241,6 +1271,7 @@ GameObject:
   - component: {fileID: 625765838}
   - component: {fileID: 625765837}
   - component: {fileID: 625765836}
+  - component: {fileID: 625765839}
   m_Layer: 5
   m_Name: Button_Restart
   m_TagString: Untagged
@@ -1362,6 +1393,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 625765834}
   m_CullTransparentMesh: 1
+--- !u!114 &625765839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 625765834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec0dbe0cc71897d40a4e9a300ea860c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
 --- !u!1 &665246038
 GameObject:
   m_ObjectHideFlags: 0
@@ -2960,7 +3003,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneController
   fadeImage: {fileID: 1602049767}
   fadeDuration: 1
-  pausePanel: {fileID: 0}
 --- !u!4 &1031997577
 Transform:
   m_ObjectHideFlags: 0
@@ -2988,10 +3030,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff9d9a4173a25294dab6386c75a17cdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
-  usePrototypeUI: 1
   distanceText: {fileID: 665246039}
   timerText: {fileID: 689074775}
-  timerSlider: {fileID: 0}
   gachaCardPanel: {fileID: 961165047}
   gachaEffectText: {fileID: 1020245705}
   gachaDurationText: {fileID: 1998529719}
@@ -3391,6 +3431,11 @@ MonoBehaviour:
   shakeFadeOut: 0.35
   gameOverShakeDuration: 0.45
   gameOverShakeIntensity: 0.5
+  comfortMode: 1
+  comfortMaxFovDelta: 8
+  comfortShakeScale: 0.6
+  comfortMaxShakeAmplitude: 0.3
+  comfortMaxRoll: 1
 --- !u!1 &1269064072
 GameObject:
   m_ObjectHideFlags: 0
@@ -3751,6 +3796,7 @@ GameObject:
   - component: {fileID: 1369659166}
   - component: {fileID: 1369659165}
   - component: {fileID: 1369659164}
+  - component: {fileID: 1369659167}
   m_Layer: 5
   m_Name: Button_Restart
   m_TagString: Untagged
@@ -3872,6 +3918,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1369659162}
   m_CullTransparentMesh: 1
+--- !u!114 &1369659167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369659162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec0dbe0cc71897d40a4e9a300ea860c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
 --- !u!1 &1444214601
 GameObject:
   m_ObjectHideFlags: 0
@@ -4767,6 +4825,7 @@ GameObject:
   - component: {fileID: 1726462032}
   - component: {fileID: 1726462031}
   - component: {fileID: 1726462030}
+  - component: {fileID: 1726462033}
   m_Layer: 5
   m_Name: Button_MainMenu
   m_TagString: Untagged
@@ -4888,6 +4947,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1726462028}
   m_CullTransparentMesh: 1
+--- !u!114 &1726462033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726462028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec0dbe0cc71897d40a4e9a300ea860c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
 --- !u!1 &1863984881
 GameObject:
   m_ObjectHideFlags: 0
@@ -4900,6 +4971,7 @@ GameObject:
   - component: {fileID: 1863984885}
   - component: {fileID: 1863984884}
   - component: {fileID: 1863984883}
+  - component: {fileID: 1863984886}
   m_Layer: 5
   m_Name: Button_Exit_Pause
   m_TagString: Untagged
@@ -5045,6 +5117,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1863984881}
   m_CullTransparentMesh: 1
+--- !u!114 &1863984886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1863984881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec0dbe0cc71897d40a4e9a300ea860c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
 --- !u!1 &1922315940
 GameObject:
   m_ObjectHideFlags: 0
@@ -5168,6 +5252,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1923040678}
   - component: {fileID: 1923040679}
+  - component: {fileID: 1923040680}
   m_Layer: 5
   m_Name: Slider_SFX
   m_TagString: Untagged
@@ -5244,10 +5329,23 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 0.5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1923040680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1923040677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 375831232e3503245bca2d149123904f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioSettingsUI
+  channel: 0
 --- !u!1 &1950063990
 GameObject:
   m_ObjectHideFlags: 0
@@ -5260,6 +5358,7 @@ GameObject:
   - component: {fileID: 1950063994}
   - component: {fileID: 1950063993}
   - component: {fileID: 1950063992}
+  - component: {fileID: 1950063995}
   m_Layer: 5
   m_Name: Button_BackToMainMenu
   m_TagString: Untagged
@@ -5381,6 +5480,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1950063990}
   m_CullTransparentMesh: 1
+--- !u!114 &1950063995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950063990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec0dbe0cc71897d40a4e9a300ea860c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
 --- !u!1 &1974987683
 GameObject:
   m_ObjectHideFlags: 0
@@ -5661,6 +5772,7 @@ MonoBehaviour:
   lowObstaclePrefab: {fileID: 450238126247845124, guid: d30abb6bb27c288478e9b4cf8a7ecc8f, type: 3}
   highObstaclePrefab: {fileID: 6723010441831018253, guid: cc55e0b01923584408863265c3a5595e, type: 3}
   fullObstaclePrefab: {fileID: 8448498366723296087, guid: 2e63c1ccd3267a84192d3f4a0a954f87, type: 3}
+  movingObstaclePrefab: {fileID: 0}
   gachaPickupPrefab: {fileID: 7016446982460234142, guid: 15470d10616807f4b87c48eef03581cb, type: 3}
   toiletPrefab: {fileID: 8129282490014184634, guid: 6aaaf668fe1ae5b45a8f64da065658a2, type: 3}
   spawnDistanceZ: 55
@@ -5672,6 +5784,8 @@ MonoBehaviour:
   gachaGroundY: 0.8
   gachaAirY: 1.8
   gachaUnderY: 0.4
+  useBuiltInPatterns: 1
+  customPatterns: []
   rowSpacing: 6
   introGapRows: 0
   startGapRows: 3
@@ -5704,14 +5818,15 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   finalClearZone: 20
+  balanceStrength: 1
+  laneLoadDecay: 0.75
+  allowMovingObstacles: 1
+  movingApproachFactor: 0.5
+  randomBlockMovingChance: 0.5
+  randomBlockMovingMinDifficulty: 0.3
+  obstacleWidthForgiveness: 0.1
   gachaSpawnChance: 0.28
   gachaCooldown: 4
-  patterns:
-  - name: 
-    minDifficulty: 0
-    maxDifficulty: 0
-    weight: 0
-    rows: 
 --- !u!4 &2036706911
 Transform:
   m_ObjectHideFlags: 0
