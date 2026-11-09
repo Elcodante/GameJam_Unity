@@ -23,7 +23,7 @@ public class GachaPickup : MonoBehaviour
     {
         if (other.CompareTag("Player") || other.GetComponent<PlayerController>() != null)
         {
-            AudioManager.Instance?.PlayGacha();
+            //AudioManager.Instance?.PlayGacha();
             // Picu roll gacha
             if (EffectManager.Instance != null)
             {

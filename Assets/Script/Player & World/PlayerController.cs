@@ -187,7 +187,7 @@ public class PlayerController : MonoBehaviour
         verticalVelocity = jumpForce;
         squashVel -= 5f * squashStrength * 2f; // meregang saat lepas landas
 
-        AudioManager.Instance?.PlayJump();
+        //AudioManager.Instance?.PlayJump();
         OnJumped?.Invoke();
     }
 
@@ -345,7 +345,7 @@ public class PlayerController : MonoBehaviour
         if (slideRoutine != null) StopCoroutine(slideRoutine);
         slideRoutine = StartCoroutine(SlideRoutine());
 
-        AudioManager.Instance?.PlaySlide();
+        //AudioManager.Instance?.PlaySlide();
         OnSlideStarted?.Invoke();
     }
 
@@ -412,7 +412,7 @@ public class PlayerController : MonoBehaviour
         bumpVel += bumpDirection * 6f;
 
         StartCoroutine(StumbleRoutine());
-        AudioManager.Instance?.PlayStumble();
+        //AudioManager.Instance?.PlayStumble();
     }
 
     private IEnumerator StumbleRoutine()
