@@ -7,6 +7,7 @@ public class PauseManager : MonoBehaviour
     [Header("UI Pause Settings")]
     public GameObject pausePanel;
     public TextMeshProUGUI countdownText;
+    public GameObject pauseButton;
 
     private bool isPaused = false;
     private bool isCountingDown = false;
@@ -17,9 +18,13 @@ public class PauseManager : MonoBehaviour
         {
             pausePanel.SetActive(false);
         }
-        if(countdownText != null)
+        if (countdownText != null)
         {
             countdownText.gameObject.SetActive(false);
+        }
+        if (pauseButton != null)
+        {
+            pauseButton.SetActive(true);
         }
     }
 
@@ -66,6 +71,10 @@ public class PauseManager : MonoBehaviour
 
         isPaused = true;
         pausePanel.SetActive(true);
+        if (pauseButton != null)
+        {
+            pauseButton.SetActive(false);
+        }
         Time.timeScale = 0f;
     }
     public void StartResumeSequence()
@@ -96,5 +105,6 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = 1f; 
         isPaused = false;
         isCountingDown = false;
+        pauseButton.SetActive(true);
     }
 }
