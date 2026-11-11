@@ -15,6 +15,10 @@ public class PlayerController : MonoBehaviour
     public event Action OnSlideStarted;
     public event Action OnSlideEnded;
 
+    [Header("Animations")]
+    [Tooltip("Komponen Animator pada model karakter")]
+    public Animator animator;
+
     [Header("Lane Settings")]
     public float laneDistance = 2.5f;
     [Tooltip("Kegesitan pindah jalur. Makin besar makin cepat. 14-18 terasa seperti Subway Surfers.\nLogika jalur berpindah seketika saat input, dan badan langsung meninggalkan jalur lama (SYBO: selisih milidetik terasa).")]
@@ -122,6 +126,11 @@ public class PlayerController : MonoBehaviour
             visualBaseRot = visualRoot.localRotation;
             visualBaseScale = visualRoot.localScale;
         }
+
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>();
+        }
     }
 
     private void Update()
@@ -137,6 +146,15 @@ public class PlayerController : MonoBehaviour
         UpdateSpeed(dt);
         ApplyMovementAndGravity(dt);
         UpdateVisuals(dt);
+
+        if (animator != null)
+        {
+            animator.SetBool("IsGrounded", controller.isGrounded);
+
+            // Menyesuaikan kecepatan animasi saat Speed Boost atau Kram Perut
+            float speedRatio = baseRunSpeed > 0 ? (currentRunSpeed / baseRunSpeed) : 1f;
+            animator.SetFloat("RunSpeed", speedRatio);
+        }
     }
 
     // =====================================================
@@ -189,6 +207,13 @@ public class PlayerController : MonoBehaviour
 
         AudioManager.Instance?.PlayJump();
         OnJumped?.Invoke();
+
+        // Trigger animasi lompat
+        if (animator != null)
+        {
+            animator.ResetTrigger("Jump");
+            animator.SetTrigger("Jump");
+        }
     }
 
     private void TrySlide()
@@ -223,16 +248,11 @@ public class PlayerController : MonoBehaviour
         OnLaneChanged?.Invoke(direction);
     }
 
-    /// <summary>
-    /// Mengecek apakah kapsul player akan menabrak rintangan selama perpindahan ke jalur tujuan.
-    /// Memperhitungkan posisi vertikal (melompat di atas rintangan rendah = boleh) dan tinggi slide.
-    /// </summary>
     private bool IsLaneBlocked(int targetLane)
     {
         float targetX = (targetLane - 1) * laneDistance;
         float radius = controller.radius;
 
-        // Jarak yang ditempuh selama pindah jalur (sekitar 95% perpindahan selesai)
         float laneChangeTime = 3f / Mathf.Max(1f, laneChangeSharpness);
         float lookAhead = currentRunSpeed * laneChangeTime;
 
@@ -263,13 +283,11 @@ public class PlayerController : MonoBehaviour
             targetSpeed = baseRunSpeed * speedMultiplier;
             if (isStumbling) targetSpeed *= stumbleSlowMultiplier;
 
-            // Awal lari: naik landai dari kecepatan awal, bukan langsung penuh
             response = launched ? speedResponse : launchResponse;
             if (!launched && currentRunSpeed >= baseRunSpeed * 0.97f) launched = true;
         }
         else
         {
-            // Menang / kalah: berhenti halus (sebelumnya dunia terus scroll dengan kecepatan terakhir)
             targetSpeed = 0f;
             response = stopResponse;
         }
@@ -280,8 +298,6 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyMovementAndGravity(float dt)
     {
-        // Pindah jalur: langsung bergerak cepat meninggalkan jalur lama, melambat halus di ujung.
-        // Eksponensial yang dihitung eksak, jadi hasilnya sama di FPS berapa pun dan tidak pernah overshoot.
         float x = transform.position.x;
         float targetX = (currentLane - 1) * laneDistance;
         float distance = Mathf.Abs(targetX - x);
@@ -295,11 +311,10 @@ public class PlayerController : MonoBehaviour
         float deltaX = newX - x;
         laneVelocity = Mathf.Lerp(laneVelocity, deltaX / Mathf.Max(dt, 0.0001f), 1f - Mathf.Exp(-25f * dt));
 
-        // Snappy gravity curve (jatuh lebih cepat dari naik)
         float velocityThisFrame;
         if (controller.isGrounded && verticalVelocity < 0f)
         {
-            verticalVelocity = -2f; // menempel ke tanah
+            verticalVelocity = -2f;
             velocityThisFrame = verticalVelocity;
         }
         else
@@ -312,7 +327,6 @@ public class PlayerController : MonoBehaviour
 
         controller.Move(new Vector3(deltaX, velocityThisFrame * dt, 0f));
 
-        // Deteksi mendarat
         bool groundedNow = controller.isGrounded;
         if (groundedNow && !wasGrounded)
         {
@@ -347,6 +361,11 @@ public class PlayerController : MonoBehaviour
 
         AudioManager.Instance?.PlaySlide();
         OnSlideStarted?.Invoke();
+
+        if (animator != null)
+        {
+            animator.SetBool("IsSliding", true);
+        }
     }
 
     private IEnumerator SlideRoutine()
@@ -376,11 +395,15 @@ public class PlayerController : MonoBehaviour
         isSliding = false;
         slideRoutine = null;
         OnSlideEnded?.Invoke();
+
+        if (animator != null)
+        {
+            animator.SetBool("IsSliding", false);
+        }
     }
 
     private void ApplySlideCollider()
     {
-        // Dasar kapsul tetap di posisi yang sama, hanya tingginya yang turun
         float bottom = originalCenter.y - originalHeight * 0.5f;
         controller.height = slideHeight;
         controller.center = new Vector3(originalCenter.x, bottom + slideHeight * 0.5f, originalCenter.z);
@@ -400,7 +423,6 @@ public class PlayerController : MonoBehaviour
 
         if (isStumbling)
         {
-            // Subway Surfers: kesalahan kedua saat masih tersandung = tertangkap
             if (secondStumbleIsFatal && GameManager.Instance != null)
             {
                 GameManager.Instance.TriggerGameOver("TERSANDUNG DUA KALI! Celanamu tidak tertolong lagi...");
@@ -408,7 +430,6 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // Dorongan visual ke arah rintangan yang ditabrak
         bumpVel += bumpDirection * 6f;
 
         StartCoroutine(StumbleRoutine());
@@ -418,7 +439,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator StumbleRoutine()
     {
         isStumbling = true;
-        ProceduralCamera.Instance?.TriggerShake(0.35f, 0.25f); // Getar kamera saat tersandung
+        ProceduralCamera.Instance?.TriggerShake(0.35f, 0.25f);
         yield return new WaitForSeconds(stumbleDuration);
         isStumbling = false;
     }
@@ -429,13 +450,12 @@ public class PlayerController : MonoBehaviour
     }
 
     // =====================================================
-    // PROCEDURAL VISUALS (lean, squash & stretch, slide tilt, bump)
+    // PROCEDURAL VISUALS
     // =====================================================
     private void UpdateVisuals(float dt)
     {
         if (visualRoot == null || !useProceduralVisuals) return;
 
-        // Miring ke arah pindah jalur
         float lean = Mathf.Clamp(laneVelocity / 30f, -1f, 1f);
         float slide01 = isSliding ? 1f : 0f;
 
@@ -444,12 +464,10 @@ public class PlayerController : MonoBehaviour
         visualYaw = Mathf.Lerp(visualYaw, lean * leanYawAngle, follow);
         visualPitch = Mathf.Lerp(visualPitch, -slide01 * slideTiltAngle, follow);
 
-        // Pegas squash & stretch
         float accel = -220f * squash - 18f * squashVel;
         squashVel += accel * dt;
         squash = Mathf.Clamp(squash + squashVel * dt, -0.35f, 0.4f);
 
-        // Pegas dorongan samping saat tersandung
         float bumpAccel = -300f * bumpOffset - 20f * bumpVel;
         bumpVel += bumpAccel * dt;
         bumpOffset += bumpVel * dt;
