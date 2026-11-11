@@ -24,7 +24,7 @@ public class EffectManager : MonoBehaviour
     public int[] luckyDurations = new int[] { 3, 5, 7 };
 
     // Event untuk mengabari UI ada efek baru (Nama Efek, Durasi, Apakah Positif)
-    public event Action<string, int, bool> OnEffectStarted;
+    public event Action<EffectType, int, bool> OnEffectStarted;
     public event Action OnEffectEnded;
 
     private Coroutine activeEffectCoroutine;
@@ -110,7 +110,7 @@ public class EffectManager : MonoBehaviour
         }
 
         Debug.Log($"<color={(isPositive ? "green" : "red")}>[GACHA ROLL]</color> Dapat: <b>{effectName}</b> selama <b>{duration} Detik!</b>");
-        OnEffectStarted?.Invoke(effectName, duration, isPositive);
+        OnEffectStarted?.Invoke(effect, duration, isPositive);
 
         activeEffectCoroutine = StartCoroutine(EffectTimerRoutine(duration));
     }
