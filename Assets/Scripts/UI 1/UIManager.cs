@@ -88,7 +88,7 @@ public class UIManager : MonoBehaviour
             }
 
             gachaCardPanel.SetActive(true);
-            if (gachaDurationText != null) gachaDurationText.text = $"Durasi: {duration} Detik";
+            if (gachaDurationText != null) gachaDurationText.text = $"{duration} Sec!";
         }
     }
 
