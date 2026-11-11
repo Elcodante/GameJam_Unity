@@ -2023,8 +2023,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 5386884, guid: f84575dde0e1a4f4da421c30816032f7, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2059,8 +2059,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 522, y: 206}
+  m_AnchoredPosition: {x: 0, y: -30}
+  m_SizeDelta: {x: 614.466, y: 310.234}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1020245704
 GameObject:
@@ -2100,10 +2100,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: asfcacvacvacvasvavadvasddvsadvasdvadvavacvavasvcasvavavavavadvavadvad
+  m_text: Your Lucky Time
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ef954914bc506bf45851ac7c3b4d12ff, type: 2}
+  m_sharedMaterial: {fileID: -4768622974291227198, guid: ef954914bc506bf45851ac7c3b4d12ff, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2196,8 +2196,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 25.000008}
-  m_SizeDelta: {x: 500, y: 110}
+  m_AnchoredPosition: {x: 0, y: -60}
+  m_SizeDelta: {x: 301.279, y: 42.046}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1021851893
 GameObject:
@@ -2414,11 +2414,23 @@ MonoBehaviour:
   distanceText: {fileID: 665246039}
   timerText: {fileID: 689074775}
   gachaCardPanel: {fileID: 961165047}
-  gachaEffectText: {fileID: 1020245705}
+  gachaCardImage: {fileID: 961165048}
   gachaDurationText: {fileID: 1998529719}
+  gachaVisuals:
+  - type: 0
+    cardSprite: {fileID: 5386884, guid: f84575dde0e1a4f4da421c30816032f7, type: 3}
+  - type: 2
+    cardSprite: {fileID: 863404056, guid: cffad5e05cde105449ee4c723f0ccfb9, type: 3}
+  - type: 4
+    cardSprite: {fileID: -993427632, guid: fa7e0b5622edfaa49a5b8afb1c9738d1, type: 3}
+  - type: 5
+    cardSprite: {fileID: 1024809292, guid: f18dccd358a04e040ae7ac9f0287d0a9, type: 3}
+  - type: 1
+    cardSprite: {fileID: -2102590873, guid: b9f281bca8db63840a7e9f74ea86e899, type: 3}
+  - type: 3
+    cardSprite: {fileID: -1684981603, guid: 5b06b011d0a9b0e4aa2758031924d214, type: 3}
   winPanel: {fileID: 819204995}
   gameOverPanel: {fileID: 244006182}
-  gameOverReasonText: {fileID: 0}
 --- !u!1 &1143649939
 GameObject:
   m_ObjectHideFlags: 0
@@ -4212,8 +4224,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 100000Detik
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ef954914bc506bf45851ac7c3b4d12ff, type: 2}
+  m_sharedMaterial: {fileID: -4768622974291227198, guid: ef954914bc506bf45851ac7c3b4d12ff, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4306,7 +4318,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 15}
   m_SizeDelta: {x: 244.496, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &2022157538

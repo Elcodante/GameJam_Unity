@@ -1,6 +1,15 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections.Generic;
+
+// Struct untuk mendaftarkan gambar di Inspector
+[System.Serializable]
+public struct GachaVisual
+{
+    public EffectType type;
+    public Sprite cardSprite;
+}
 
 public class UIManager : MonoBehaviour
 {
@@ -12,28 +21,39 @@ public class UIManager : MonoBehaviour
 
     [Header("Gacha UI References")]
     public GameObject gachaCardPanel;
-    public TextMeshProUGUI gachaEffectText;
+    public Image gachaCardImage; // Tambahan komponen Image untuk mengganti gambar
     public TextMeshProUGUI gachaDurationText;
+
+    [Header("Gacha Assets Library")]
+    public GachaVisual[] gachaVisuals;
+    private Dictionary<EffectType, Sprite> gachaDictionary;
 
     [Header("Endgame UI References")]
     public GameObject winPanel;
     public GameObject gameOverPanel;
-    public TextMeshProUGUI gameOverReasonText;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        // Inisialisasi Dictionary untuk pencarian gambar O(1)
+        gachaDictionary = new Dictionary<EffectType, Sprite>();
+        foreach (var visual in gachaVisuals)
+        {
+            if (!gachaDictionary.ContainsKey(visual.type))
+            {
+                gachaDictionary.Add(visual.type, visual.cardSprite);
+            }
+        }
     }
 
     private void Start()
     {
-        // Keamanan tambahan: Pastikan panel popup tersembunyi saat game baru mulai
         if (gachaCardPanel != null) gachaCardPanel.SetActive(false);
         if (winPanel != null) winPanel.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
 
-        // Langganan Event ke Manager lain
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnStatsUpdated += HandleStatsUpdate;
@@ -43,6 +63,7 @@ public class UIManager : MonoBehaviour
 
         if (EffectManager.Instance != null)
         {
+            // Perhatikan perubahan parameter di sini menjadi EffectType
             EffectManager.Instance.OnEffectStarted += HandleEffectStarted;
             EffectManager.Instance.OnEffectEnded += HandleEffectEnded;
         }
@@ -50,30 +71,30 @@ public class UIManager : MonoBehaviour
 
     private void HandleStatsUpdate(float dist, float time)
     {
-        // Langsung update ke teks asli tanpa perantara variabel cache
         if (distanceText != null) distanceText.text = $"{Mathf.CeilToInt(dist)} m";
         if (timerText != null) timerText.text = $"{Mathf.CeilToInt(time)}s";
     }
 
-    private void HandleEffectStarted(string effectName, int duration, bool isPositive)
+    // Fungsi ini menangkap EffectType dari EffectManager
+    private void HandleEffectStarted(EffectType effectType, int duration, bool isPositive)
     {
-        if (gachaCardPanel != null)
+        if (gachaCardPanel != null && gachaCardImage != null)
         {
-            gachaCardPanel.SetActive(true);
-            if (gachaEffectText != null) gachaEffectText.text = effectName;
+            // Cari gambar yang sesuai di Dictionary
+            if (gachaDictionary.TryGetValue(effectType, out Sprite newSprite))
+            {
+                // Ganti gambar panel dengan aset yang sesuai
+                gachaCardImage.sprite = newSprite;
+            }
 
-            // Catatan: Jika ingin efek warna berbeda (hijau/merah) untuk buff/debuff, 
-            // kamu bisa mengubah gachaCardPanel.GetComponent<Image>().color di sini menggunakan parameter isPositive.
-            if (gachaDurationText != null) gachaDurationText.text = $"Angka Hoki: {duration} Detik!";
+            gachaCardPanel.SetActive(true);
+            if (gachaDurationText != null) gachaDurationText.text = $"Durasi: {duration} Detik";
         }
     }
 
     private void HandleEffectEnded()
     {
-        if (gachaCardPanel != null)
-        {
-            gachaCardPanel.SetActive(false);
-        }
+        if (gachaCardPanel != null) gachaCardPanel.SetActive(false);
     }
 
     private void HandleGameWon()
@@ -86,13 +107,11 @@ public class UIManager : MonoBehaviour
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
-            if (gameOverReasonText != null) gameOverReasonText.text = reason;
         }
     }
 
     private void OnDestroy()
     {
-        // Berhenti langganan event saat scene berganti untuk mencegah Memory Leak
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnStatsUpdated -= HandleStatsUpdate;
