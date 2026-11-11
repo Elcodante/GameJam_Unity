@@ -13,6 +13,11 @@ public class SceneController : MonoBehaviour
     {
         if (fadeImage != null)
         {
+            if(AudioManager.Instance != null)
+            {
+                AudioManager.Instance.FadeBGM(isFadingOut: false, fadeDuration);
+            }
+
             StartCoroutine(FadeSequence(1f, 0f)); 
         }
     }
@@ -24,6 +29,10 @@ public class SceneController : MonoBehaviour
 
     private IEnumerator FadeOutAndLoad(string sceneName)
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.FadeBGM(isFadingOut: true, fadeDuration);
+        }
         yield return StartCoroutine(FadeSequence(0f, 1f)); 
         SceneManager.LoadSceneAsync(sceneName);
     }
