@@ -133,7 +133,7 @@ public class ProceduralCamera : MonoBehaviour
 
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnGameWon += TriggerWhiteFlash;
+            //GameManager.Instance.OnGameWon += TriggerWhiteFlash;
             GameManager.Instance.OnGameOver += HandleGameOver;
         }
     }
@@ -358,7 +358,7 @@ public class ProceduralCamera : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnGameWon -= TriggerWhiteFlash;
+            //GameManager.Instance.OnGameWon -= TriggerWhiteFlash;
             GameManager.Instance.OnGameOver -= HandleGameOver;
         }
         if (whiteTexture != null) Destroy(whiteTexture);

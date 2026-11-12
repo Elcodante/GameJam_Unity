@@ -8,6 +8,7 @@ public class PauseManager : MonoBehaviour
     public GameObject pausePanel;
     public TextMeshProUGUI countdownText;
     public GameObject pauseButton;
+    public GameObject gachaPanel;
 
     private bool isPaused = false;
     private bool isCountingDown = false;
@@ -25,6 +26,10 @@ public class PauseManager : MonoBehaviour
         if (pauseButton != null)
         {
             pauseButton.SetActive(true);
+        }
+        if(gachaPanel != null)
+        {
+            gachaPanel.SetActive(false);
         }
     }
 
@@ -71,6 +76,7 @@ public class PauseManager : MonoBehaviour
 
         isPaused = true;
         pausePanel.SetActive(true);
+        gachaPanel.SetActive(false);
         if (pauseButton != null)
         {
             pauseButton.SetActive(false);
@@ -106,5 +112,6 @@ public class PauseManager : MonoBehaviour
         isPaused = false;
         isCountingDown = false;
         pauseButton.SetActive(true);
+        gachaPanel.SetActive(true);
     }
 }
