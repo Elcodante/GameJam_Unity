@@ -2,25 +2,37 @@ using UnityEngine;
 
 public class EnvironmentSpawner : MonoBehaviour
 {
-    [Header("Prefabs Pool")]
-    [Tooltip("Daftar prefab bangunan / dekorasi samping jalan")]
-    public GameObject[] buildingPrefabs;
-
-    [Header("Spawn Heights & Positions")]
-    [Tooltip("Tinggi lantai / permukaan jalan. Samakan dengan Y Jalan kamu (-0.5f)")]
-    public float spawnY = -0.5f;
-
-    [Tooltip("Jarak dari tengah jalan ke samping (coba 5.5 - 7 agar pas di pinggir jalan)")]
-    public float sideOffset = 6.5f;
-
-    [Tooltip("Jarak terjauh di depan player tempat bangunan pertama muncul")]
-    public float spawnZDistance = 60f;
-
-    [Tooltip("Panjang per blok bangunan (jarak Z antar baris)")]
+    [Header("General Settings")]
+    [Tooltip("Panjang per potongan blok. Jika panjang modular jalan/bangunanmu 10m, isi 10")]
     public float pieceLength = 10f;
-
+    [Tooltip("Jarak terjauh di depan player tempat objek pertama muncul")]
+    public float spawnZDistance = 60f;
     [Tooltip("Jumlah baris awal saat game dimulai")]
     public int initialPieces = 8;
+    [Tooltip("Tinggi lantai / permukaan aspal (sesuaikan dengan Y jalan, default: -0.5f)")]
+    public float groundY = -0.5f;
+
+    [Header("Layer 1: Modular Road / Ground (Tengah)")]
+    [Tooltip("Centang jika ingin jalanan bergerak mundur secara modular")]
+    public bool enableMovingRoad = true;
+    [Tooltip("Prefab potongan jalan yang akan menyambung terus")]
+    public GameObject[] roadPrefabs;
+
+    [Header("Layer 2: Roadside Buildings (Pinggir Jalan)")]
+    public bool enableRoadsideBuildings = true;
+    [Tooltip("Daftar prefab bangunan/warung/pohon di pinggir jalan")]
+    public GameObject[] roadsidePrefabs;
+    [Tooltip("Jarak dari tengah jalan ke pinggir jalan (misal 6.5)")]
+    public float roadsideOffset = 6.5f;
+
+    [Header("Layer 3: Background Buildings (Latar Belakang)")]
+    public bool enableBackgroundBuildings = true;
+    [Tooltip("Daftar prefab gedung tinggi/perumahan yang ada di belakang layer 2")]
+    public GameObject[] backgroundPrefabs;
+    [Tooltip("Jarak layer belakang dari tengah jalan (misal 16 - 22 agar berada di balik layer 2)")]
+    public float backgroundOffset = 18f;
+    [Tooltip("Tambahan ketinggian layer belakang (misal 0 atau dibuat sedikit berundak)")]
+    public float backgroundYOffset = 0f;
 
     private float distanceAccumulator = 0f;
     private float currentSpawnZ = 0f;
@@ -31,47 +43,74 @@ public class EnvironmentSpawner : MonoBehaviour
         currentSpawnZ = -pieceLength;
         for (int i = 0; i < initialPieces; i++)
         {
-            SpawnEnvironmentRow(currentSpawnZ);
+            SpawnFullSlice(currentSpawnZ);
             currentSpawnZ += pieceLength;
         }
     }
 
     private void Update()
     {
-        if (buildingPrefabs == null || buildingPrefabs.Length == 0) return;
-
         float speed = PlayerController.Instance != null ? PlayerController.Instance.currentRunSpeed : 12f;
-        
-        // Akumulasi jarak tempuh riil player agar sinkron dengan TreadmillMover
+
+        // Akumulasi jarak tempuh player
         distanceAccumulator += speed * Time.deltaTime;
 
-        // Tiap menempuh pieceLength (10 meter), spawn baris baru tepat di depan
+        // Tiap player menempuh sejauh pieceLength, spawn potongan lingkungan baru
         while (distanceAccumulator >= pieceLength)
         {
             distanceAccumulator -= pieceLength;
-            SpawnEnvironmentRow(spawnZDistance - distanceAccumulator);
+            SpawnFullSlice(spawnZDistance - distanceAccumulator);
         }
     }
 
-    private void SpawnEnvironmentRow(float zPos)
+    /// <summary>
+    /// Memunculkan 1 baris potongan lingkungan (Jalan + Bangunan Depan + Bangunan Belakang)
+    /// </summary>
+    private void SpawnFullSlice(float zPos)
     {
-        // 1. Spawn Sisi Kiri (Menghadap kanan ke arah jalan)
-        GameObject leftPrefab = buildingPrefabs[Random.Range(0, buildingPrefabs.Length)];
-        if (leftPrefab != null)
+        // 1. SPAWN JALAN (Tengah, X = 0)
+        if (enableMovingRoad && roadPrefabs != null && roadPrefabs.Length > 0)
         {
-            Vector3 leftPos = new Vector3(-sideOffset, spawnY, zPos);
-            GameObject leftObj = Instantiate(leftPrefab, leftPos, Quaternion.Euler(0, 90, 0), transform);
-            EnsureMoverComponent(leftObj);
+            GameObject roadPrefab = roadPrefabs[Random.Range(0, roadPrefabs.Length)];
+            if (roadPrefab != null)
+            {
+                Vector3 roadPos = new Vector3(0f, groundY, zPos);
+                GameObject roadObj = Instantiate(roadPrefab, roadPos, Quaternion.identity, transform);
+                EnsureMoverComponent(roadObj);
+            }
         }
 
-        // 2. Spawn Sisi Kanan (Menghadap kiri ke arah jalan)
-        GameObject rightPrefab = buildingPrefabs[Random.Range(0, buildingPrefabs.Length)];
-        if (rightPrefab != null)
+        // 2. SPAWN BANGUNAN PINGGIR JALAN (Layer Depan)
+        if (enableRoadsideBuildings && roadsidePrefabs != null && roadsidePrefabs.Length > 0)
         {
-            Vector3 rightPos = new Vector3(sideOffset, spawnY, zPos);
-            GameObject rightObj = Instantiate(rightPrefab, rightPos, Quaternion.Euler(0, -90, 0), transform);
-            EnsureMoverComponent(rightObj);
+            // Sisi Kiri (Hadap kanan / ke arah jalan)
+            SpawnSingleProp(roadsidePrefabs, -roadsideOffset, groundY, zPos, 90f);
+
+            // Sisi Kanan (Hadap kiri / ke arah jalan)
+            SpawnSingleProp(roadsidePrefabs, roadsideOffset, groundY, zPos, -90f);
         }
+
+        // 3. SPAWN BANGUNAN LATAR BELAKANG (Layer Belakang)
+        if (enableBackgroundBuildings && backgroundPrefabs != null && backgroundPrefabs.Length > 0)
+        {
+            float bgY = groundY + backgroundYOffset;
+
+            // Sisi Kiri Belakang
+            SpawnSingleProp(backgroundPrefabs, -backgroundOffset, bgY, zPos, 90f);
+
+            // Sisi Kanan Belakang
+            SpawnSingleProp(backgroundPrefabs, backgroundOffset, bgY, zPos, -90f);
+        }
+    }
+
+    private void SpawnSingleProp(GameObject[] pool, float xPos, float yPos, float zPos, float yRotation)
+    {
+        GameObject prefab = pool[Random.Range(0, pool.Length)];
+        if (prefab == null) return;
+
+        Vector3 pos = new Vector3(xPos, yPos, zPos);
+        GameObject obj = Instantiate(prefab, pos, Quaternion.Euler(0f, yRotation, 0f), transform);
+        EnsureMoverComponent(obj);
     }
 
     private void EnsureMoverComponent(GameObject obj)

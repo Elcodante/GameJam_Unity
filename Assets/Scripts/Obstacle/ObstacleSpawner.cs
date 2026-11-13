@@ -66,6 +66,8 @@ public class ObstacleSpawner : MonoBehaviour
     public GameObject lowObstaclePrefab;   // Rintangan ceper (Lompat)
     public GameObject highObstaclePrefab;  // Plang melayang (Slide)
     public GameObject fullObstaclePrefab;  // Tembok / Orang / Box penuh (diam)
+    [Tooltip("Prefab tiang gawang 3 jalur yang membentang di jalan")]
+    public GameObject highObstacleFramePrefab;
     [Tooltip("Prefab kereta yang bergerak. Kosong = pakai Full Obstacle Prefab")]
     public GameObject movingObstaclePrefab;
     public GameObject gachaPickupPrefab;   // Kotak Gacha
@@ -86,6 +88,8 @@ public class ObstacleSpawner : MonoBehaviour
     public float gachaGroundY = 0.8f;   // gacha di jalur kosong
     public float gachaAirY = 1.8f;      // gacha melayang di atas rintangan lompat
     public float gachaUnderY = 0.4f;    // gacha di kolong rintangan slide
+    [Tooltip("Ketinggian tiang gawang (sesuaikan tinggi jalan, misal -0.5f)")]
+    public float highFrameY = 1.7f;
 
     [Header("Pattern Library")]
     [Tooltip("Pakai library pola bawaan (selalu versi terbaru). Matikan jika ingin hanya memakai Custom Patterns.")]
@@ -445,6 +449,29 @@ public class ObstacleSpawner : MonoBehaviour
     // =====================================================
     private void SpawnRow(Row row, float z)
     {
+        // 1. Cek apakah ada rintangan High (kain) di baris ini
+        bool hasHighObstacle = false;
+        for (int l = 0; l < LaneCount; l++)
+        {
+            if (row.lanes[l] == Cell.High)
+            {
+                hasHighObstacle = true;
+                break;
+            }
+        }
+
+        // 2. Jika ada kain, spawn 1 tiang gawang melintang tepat di tengah jalan (X = 0)
+        if (hasHighObstacle && highObstacleFramePrefab != null)
+        {
+            GameObject frame = Instantiate(highObstacleFramePrefab, new Vector3(0f, highFrameY, z), Quaternion.identity);
+            if (frame.GetComponent<TreadmillMover>() == null)
+            {
+                TreadmillMover mover = frame.AddComponent<TreadmillMover>();
+                mover.destroyZPosition = -15f;
+            }
+        }
+
+        // 3. Spawn rintangan per jalur (kain akan spawn di jalur yang sesuai)
         for (int lane = 0; lane < LaneCount; lane++)
         {
             float x = (lane - 1) * laneDistance;
