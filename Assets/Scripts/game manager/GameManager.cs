@@ -53,9 +53,15 @@ public class GameManager : MonoBehaviour
         remainingTimer = totalTimer;
 
         isToiletSpawned = false;
-        currentState = GameState.Playing;
+        currentState = GameState.Ready;
 
         Debug.Log($"<color=cyan>[Lucky Number]</color> Jarak: {initialDistance}m | Waktu Kebelet: {totalTimer}s");
+    }
+
+    public void BeginPlaying()
+    {
+        currentState = GameState.Playing;
+        Debug.Log("<color=green>[START]</color> Lari!!!");
     }
 
     private void Update()
