@@ -205,7 +205,7 @@ public class PlayerController : MonoBehaviour
         verticalVelocity = jumpForce;
         squashVel -= 5f * squashStrength * 2f; // meregang saat lepas landas
 
-        //AudioManager.Instance?.PlayJump();
+        AudioManager.Instance?.PlaySFX(SoundType.Jump);
         OnJumped?.Invoke();
 
         // Trigger animasi lompat
@@ -433,7 +433,7 @@ public class PlayerController : MonoBehaviour
         bumpVel += bumpDirection * 6f;
 
         StartCoroutine(StumbleRoutine());
-        //AudioManager.Instance?.PlayStumble();
+        AudioManager.Instance?.PlaySFX(SoundType.Hit);
     }
 
     private IEnumerator StumbleRoutine()

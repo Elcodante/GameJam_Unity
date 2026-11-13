@@ -110,6 +110,7 @@ public class EffectManager : MonoBehaviour
         }
 
         Debug.Log($"<color={(isPositive ? "green" : "red")}>[GACHA ROLL]</color> Dapat: <b>{effectName}</b> selama <b>{duration} Detik!</b>");
+        AudioManager.Instance?.PlaySFX(SoundType.Gacha);
         OnEffectStarted?.Invoke(effect, duration, isPositive);
 
         activeEffectCoroutine = StartCoroutine(EffectTimerRoutine(duration));
