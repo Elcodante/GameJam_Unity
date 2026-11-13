@@ -20,7 +20,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI timerText;
 
     [Header("Gacha UI References")]
-    public GameObject gachaCardPanel;
+    public UIPopupJuicer gachaJuicer;
     public Image gachaCardImage; // Tambahan komponen Image untuk mengganti gambar
     public TextMeshProUGUI gachaDurationText;
 
@@ -50,7 +50,6 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        if (gachaCardPanel != null) gachaCardPanel.SetActive(false);
         if (winPanel != null) winPanel.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
 
@@ -78,23 +77,26 @@ public class UIManager : MonoBehaviour
     // Fungsi ini menangkap EffectType dari EffectManager
     private void HandleEffectStarted(EffectType effectType, int duration, bool isPositive)
     {
-        if (gachaCardPanel != null && gachaCardImage != null)
+        if (gachaJuicer != null && gachaCardImage != null)
         {
-            // Cari gambar yang sesuai di Dictionary
             if (gachaDictionary.TryGetValue(effectType, out Sprite newSprite))
             {
-                // Ganti gambar panel dengan aset yang sesuai
                 gachaCardImage.sprite = newSprite;
             }
 
-            gachaCardPanel.SetActive(true);
-            if (gachaDurationText != null) gachaDurationText.text = $"{duration} Sec!";
+            // GANTI: gachaCardPanel.SetActive(true);
+            gachaJuicer.Show(); // Panggil animasi melenting
+
+            if (gachaDurationText != null) gachaDurationText.text = $"Durasi: {duration} Detik";
         }
     }
 
     private void HandleEffectEnded()
     {
-        if (gachaCardPanel != null) gachaCardPanel.SetActive(false);
+        if (gachaJuicer != null)
+        {
+            gachaJuicer.Hide(); // Panggil animasi tersapu angin!
+        }
     }
 
     private void HandleGameWon()
