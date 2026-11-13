@@ -112,6 +112,5 @@ public class PauseManager : MonoBehaviour
         isPaused = false;
         isCountingDown = false;
         pauseButton.SetActive(true);
-        gachaPanel.SetActive(true);
     }
 }

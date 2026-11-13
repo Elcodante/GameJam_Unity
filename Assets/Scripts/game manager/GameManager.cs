@@ -109,6 +109,7 @@ public class GameManager : MonoBehaviour
         currentState = GameState.GameOver;
         if (PlayerController.Instance != null) PlayerController.Instance.canControl = false;
 
+        AudioManager.Instance?.PlaySFX(SoundType.Lose);
         Debug.Log($"<color=red>[GAME OVER]</color> {reason}");
         OnGameOver?.Invoke(reason);
     }
@@ -120,6 +121,7 @@ public class GameManager : MonoBehaviour
         currentState = GameState.Won;
         if (PlayerController.Instance != null) PlayerController.Instance.canControl = false;
 
+        AudioManager.Instance?.PlaySFX(SoundType.Win);
         Debug.Log("<color=yellow>[VICTORY]</color> Haaaah... Tepat waktu sampai di toilet!");
         OnGameWon?.Invoke();
     }
