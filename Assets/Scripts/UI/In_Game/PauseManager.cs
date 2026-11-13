@@ -127,7 +127,7 @@ public class PauseManager : MonoBehaviour
         while (count > 0)
         {
             countdownText.text = count.ToString();
-            AudioManager.Instance?.PlaySFX(SoundType.ButtonPressed);
+            //AudioManager.Instance?.PlaySFX(SoundType.ButtonPressed);
 
             // Jalankan animasi heboh selama 1 detik (menggantikan WaitForSeconds)
             yield return StartCoroutine(HebohTextAnim());
@@ -136,7 +136,7 @@ public class PauseManager : MonoBehaviour
 
         // Teks START!
         countdownText.text = "START!";
-        AudioManager.Instance?.PlaySFX(SoundType.Jump);
+        //AudioManager.Instance?.PlaySFX(SoundType.Jump);
         yield return StartCoroutine(HebohTextAnim()); // START! juga ikut animasi heboh
 
         countdownText.gameObject.SetActive(false);
