@@ -3,17 +3,17 @@ using UnityEngine;
 public class EnvironmentSpawner : MonoBehaviour
 {
     [Header("General Settings")]
-    [Tooltip("Panjang per potongan blok. Jika panjang modular jalan/bangunanmu 10m, isi 10")]
+    [Tooltip("Panjang per blok potongan (misal: 10 meter)")]
     public float pieceLength = 10f;
-    [Tooltip("Jarak terjauh di depan player tempat objek pertama muncul")]
-    public float spawnZDistance = 60f;
-    [Tooltip("Jumlah baris awal saat game dimulai")]
-    public int initialPieces = 8;
+
+    [Tooltip("Jarak terjauh di depan player tempat lingkungan selalu siap (misal: 100)")]
+    public float spawnZDistance = 100f;
+
     [Tooltip("Tinggi lantai / permukaan aspal (sesuaikan dengan Y jalan, default: -0.5f)")]
     public float groundY = -0.5f;
 
     [Header("Layer 1: Modular Road / Ground (Tengah)")]
-    [Tooltip("Centang jika ingin jalanan bergerak mundur secara modular")]
+    [Tooltip("Centang jika ingin jalanan bergerak mundur")]
     public bool enableMovingRoad = true;
     [Tooltip("Prefab potongan jalan yang akan menyambung terus")]
     public GameObject[] roadPrefabs;
@@ -22,29 +22,31 @@ public class EnvironmentSpawner : MonoBehaviour
     public bool enableRoadsideBuildings = true;
     [Tooltip("Daftar prefab bangunan/warung/pohon di pinggir jalan")]
     public GameObject[] roadsidePrefabs;
-    [Tooltip("Jarak dari tengah jalan ke pinggir jalan (misal 6.5)")]
-    public float roadsideOffset = 6.5f;
+    [Tooltip("Jarak dari tengah jalan ke pinggir jalan (misal 6.5 - 8)")]
+    public float roadsideOffset = 7.5f;
 
     [Header("Layer 3: Background Buildings (Latar Belakang)")]
     public bool enableBackgroundBuildings = true;
-    [Tooltip("Daftar prefab gedung tinggi/perumahan yang ada di belakang layer 2")]
+    [Tooltip("Daftar prefab gedung tinggi di belakang layer 2")]
     public GameObject[] backgroundPrefabs;
-    [Tooltip("Jarak layer belakang dari tengah jalan (misal 16 - 22 agar berada di balik layer 2)")]
+    [Tooltip("Jarak layer belakang dari tengah jalan (misal 18 - 22)")]
     public float backgroundOffset = 18f;
-    [Tooltip("Tambahan ketinggian layer belakang (misal 0 atau dibuat sedikit berundak)")]
+    [Tooltip("Tambahan ketinggian layer belakang (default: 0)")]
     public float backgroundYOffset = 0f;
 
-    private float distanceAccumulator = 0f;
-    private float currentSpawnZ = 0f;
+    // Melacak titik Z terdepan yang saat ini sudah terpasang
+    private float furthestZ = 0f;
 
     private void Start()
     {
-        // Spawn baris-baris awal dari belakang player ke depan
-        currentSpawnZ = -pieceLength;
-        for (int i = 0; i < initialPieces; i++)
+        // Mulai dari belakang player
+        furthestZ = -pieceLength;
+
+        // Otomatis spawn menyambung terus sampai batas spawnZDistance (Dijamin tidak ada gap!)
+        while (furthestZ < spawnZDistance)
         {
-            SpawnFullSlice(currentSpawnZ);
-            currentSpawnZ += pieceLength;
+            SpawnFullSlice(furthestZ);
+            furthestZ += pieceLength;
         }
     }
 
@@ -52,19 +54,19 @@ public class EnvironmentSpawner : MonoBehaviour
     {
         float speed = PlayerController.Instance != null ? PlayerController.Instance.currentRunSpeed : 12f;
 
-        // Akumulasi jarak tempuh player
-        distanceAccumulator += speed * Time.deltaTime;
+        // Ikuti pergerakan mundur seluruh bangunan dari TreadmillMover
+        furthestZ -= speed * Time.deltaTime;
 
-        // Tiap player menempuh sejauh pieceLength, spawn potongan lingkungan baru
-        while (distanceAccumulator >= pieceLength)
+        // Begitu ujung paling depan berkurang, langsung tempelkan potongan baru persis di ujungnya
+        while (furthestZ < spawnZDistance)
         {
-            distanceAccumulator -= pieceLength;
-            SpawnFullSlice(spawnZDistance - distanceAccumulator);
+            SpawnFullSlice(furthestZ);
+            furthestZ += pieceLength;
         }
     }
 
     /// <summary>
-    /// Memunculkan 1 baris potongan lingkungan (Jalan + Bangunan Depan + Bangunan Belakang)
+    /// Memunculkan 1 baris potongan lingkungan utuh (Jalan + Gedung Depan + Gedung Belakang)
     /// </summary>
     private void SpawnFullSlice(float zPos)
     {
